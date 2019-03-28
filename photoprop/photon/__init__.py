@@ -1,10 +1,11 @@
 from .photon import Photon
-from .scattering import henyey_greenstein, scattering2d, scattering3d
+from .scattering import scattering2d, scattering3d, SimpleGaussian, HenyeyGreenstein
 
 
 __all__ = [
-	'Photon',
-	'henyey_greenstein',
-	'scattering2d',
-	'scattering3d'
+    'Photon',
+    'HenyeyGreenstein',
+    'SimpleGaussian',
+    'scattering2d',
+    'scattering3d'
 ]

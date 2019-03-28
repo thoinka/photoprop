@@ -1,15 +1,34 @@
 import numpy as np
 
 
-def henyey_greenstein(n_samples, g=0.94):
-    '''Generates scattering angles according to the Henyey Greenstein
-    approximation. From
-    https://www.astro.umd.edu/~jph/HG_note.pdf
-    '''
-    r = np.random.uniform(-1.0, 1.0, n_samples)
-    cosphi = (1 + g ** 2 - ((1.0 - g **2) / (1.0 + g * r)) ** 2) / 2.0 / g
-    return np.arccos(cosphi)
+class ScatteringModelBase:
+    __gen__ = None
+    
+    def __init__(self, *args, **kwargs):
+        self.gen_args = args
+        self.gen_kwargs = kwargs
 
+    def __call__(self, n_samples):
+        return self.__gen__(n_samples, *self.gen_args, **self.gen_kwargs)
+
+
+class SimpleGaussian(ScatteringModelBase):
+    def __gen__(self, n_samples, sigma=0.01):
+        '''Generates scattering angles according to some super simple Gaussian
+        model'''
+        return np.random.randn(n_samples) * sigma
+
+
+class HenyeyGreenstein(ScatteringModelBase):
+    def __gen__(self, n_samples, g=0.94):
+        '''Generates scattering angles according to the Henyey Greenstein
+        approximation. From
+        https://www.astro.umd.edu/~jph/HG_note.pdf
+        '''
+        r = np.random.uniform(-1.0, 1.0, n_samples)
+        cosphi = (1 + g ** 2 - ((1.0 - g **2) / (1.0 + g * r)) ** 2) / 2.0 / g
+        return np.arccos(cosphi)
+        
 
 def rotmat2d(phi):
     c, s = np.cos(phi), np.sin(phi)

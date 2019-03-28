@@ -1,6 +1,6 @@
 import numpy as np
 from scipy.interpolate import interp1d
-from .scattering import henyey_greenstein, scattering2d, scattering3d
+from .scattering import HenyeyGreenstein, scattering2d, scattering3d
 
 
 class Photon:
@@ -16,7 +16,7 @@ class Photon:
     '''
 
     def __init__(self, x0, v0, t0, c_sca, c_abs, c0=1.0,
-                 dphi_gen=henyey_greenstein):
+                 dphi_gen=HenyeyGreenstein()):
         '''
         Parameters
         ----------
@@ -57,7 +57,6 @@ class Photon:
         self.n_steps = 0
         self.dphi_gen = dphi_gen
 
-
     def propagate(self, n_steps=2):
         '''
         Parameters
@@ -74,7 +73,7 @@ class Photon:
         self.v = np.array(self.v).swapaxes(0, 1)
         self.x = np.array(self.x).swapaxes(0, 1)
         self.t = np.array(self.t).swapaxes(0, 1)
-        self.w = np.exp(-self.c_abs * (self.t - self.t[:,0].reshape(-1,1)))
+        self.w = np.exp(-self.c_abs * self.t)
         self.n_steps += n_steps
 
     def __len__(self):

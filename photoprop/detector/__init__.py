@@ -2,6 +2,6 @@ from .detector import Detector, retro_prop
 
 
 __all__ = [
-	'Detector',
+    'Detector',
     'retro_prop'
 ]

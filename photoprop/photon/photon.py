@@ -34,10 +34,6 @@ class Photon:
             Speed of Light.
         d_phi_gen : callable
             Generator of angular displacement at each scattering.
-
-        Notes
-        -----
-        Speed of light is always 1.
         '''
         self.x = [x0]
         self.v = [v0]
@@ -72,7 +68,7 @@ class Photon:
             self.t.append(self.t[-1] + s_.flatten())
         self.v = np.array(self.v).swapaxes(0, 1)
         self.x = np.array(self.x).swapaxes(0, 1)
-        self.t = np.array(self.t).swapaxes(0, 1)
+        self.t = np.array(self.t).swapaxes(0, 1) / self.c0
         self.w = np.exp(-self.c_abs * self.t)
         self.n_steps += n_steps
 

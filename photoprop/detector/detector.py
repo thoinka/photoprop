@@ -3,7 +3,7 @@ import pandas as pd
 from ..util import check_intersect, isotropic
 from ..photon import Photon
 from tqdm import tqdm
-
+from joblib import Parallel, delayed
 
 class Detector:
 
@@ -12,15 +12,15 @@ class Detector:
         self.doms = dom_pos
         self.radius = radius
 
-    def detect(self, photons):
-        hits = [check_intersect(photons.x,
-                                photons.t,
-                                photons.w,
-                                self.radius,
-                                self.doms[i],
-                                i,
-                                return_index=True)
-                for i in tqdm(range(len(self.doms)))]
+    def detect(self, photons, n_jobs=1):
+        hits = Parallel(n_jobs)([delayed(check_intersect)(photons.x,
+                                                          photons.t,
+                                                          photons.w,
+                                                          self.radius,
+                                                          self.doms[i],
+                                                          i,
+                                                          return_index=True)
+                                 for i in range(len(self.doms))])
         multi_index = pd.MultiIndex.from_arrays([
             np.vstack(hits)[:,0].astype(int),
             np.vstack(hits)[:,1].astype(int)], names=['dom', 'photon'])
@@ -28,7 +28,6 @@ class Detector:
         df = pd.DataFrame(np.vstack(hits)[:,2:],
                           index=multi_index,
                           columns=cols)
-        print(len(df))
         visible = df.t - df.w < np.random.exponential(1.0 / photons.c_abs,
                                                       len(df))
         return df[visible]
